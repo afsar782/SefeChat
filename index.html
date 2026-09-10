@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#000000">
+    <title>SefeChat – Chat. Call. Share.</title>
+    <meta name="description" content="SefeChat – Free private chat app with HD video calls, voice calls, and image sharing.">
+    <link rel="icon" type="image/png" href="image/logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        :root {
+            --black: #000000;
+            --black-2: #0a0a0a;
+            --black-3: #131313;
+            --black-4: #1a1a1a;
+            --white: #ffffff;
+            --text: #ffffff;
+            --text-dim: #888888;
+            --text-dim-2: #555555;
+            --border: rgba(255,255,255,0.08);
+            --border-2: rgba(255,255,255,0.12);
+            --accent: #00ff88;
+            --accent-2: #00cc6a;
+            --accent-glow: rgba(0, 255, 136, 0.3);
+            --grad: linear-gradient(135deg, #00ff88 0%, #00cc6a 100%);
+            --wa: #25d366;
+            --wa-dark: #128c7e;
+            --safe-b: env(safe-area-inset-bottom, 0px);
+            --safe-t: env(safe-area-inset-top, 0px);
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--black);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+            padding-bottom: calc(80px + var(--safe-b));
+        }
+
+        /* ============ TOP TOOLBAR (Fixed) ============ */
+        .toolbar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-bottom: 1px solid var(--border);
+            padding: 12px 18px;
+            padding-top: calc(12px + var(--safe-t));
+        }
+
+        .toolbar-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Company Logo */
+        .company-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text);
+        }
+
+        .company-logo img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: contain;
+            background: #fff;
+            padding: 3px;
+            border: 2px solid var(--accent);
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        .company-name {
+            font-family: 'Outfit', sans-serif;
+            font-size: 19px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .toolbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toolbar-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 9px 16px;
+            background: var(--grad);
+            color: #000;
+            border-radius: 30px;
+            font-size: 12.5px;
+            font-weight: 800;
+            text-decoration: none;
+            box-shadow: 0 4px 15px var(--accent-glow);
+            letter-spacing: 0.3px;
+        }
+        .toolbar-btn:active { transform: scale(0.95); }
+
+        .toolbar-btn.ghost {
+            background: rgba(255,255,255,0.06);
+            color: var(--text);
+            border: 1px solid var(--border-2);
+            box-shadow: none;
+            display: none;
+        }
+
+        /* ============ HERO ============ */
+        .hero {
+            padding: 100px 18px 40px;
+            padding-top: calc(100px + var(--safe-t));
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .hero-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 14px;
+            background: rgba(0, 255, 136, 0.08);
+            border: 1px solid rgba(0, 255, 136, 0.25);
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            margin-bottom: 22px;
+        }
+
+        .hero-tag .dot {
+            width: 7px; height: 7px;
+            background: var(--accent);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.4); }
+        }
+
+        .hero h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 46px;
+            font-weight: 900;
+            line-height: 1;
+            letter-spacing: -2px;
+            margin-bottom: 20px;
+        }
+
+        .hero h1 .accent {
+            background: var(--grad);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 15px;
+            color: var(--text-dim);
+            line-height: 1.7;
+            margin-bottom: 28px;
+            max-width: 480px;
+        }
+
+        .hero-btns {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 16px 26px;
+            border-radius: 50px;
+            font-family: inherit;
+            font-size: 15px;
+            font-weight: 800;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            min-height: 54px;
+            letter-spacing: 0.2px;
+            transition: transform 0.15s ease;
+        }
+        .btn:active { transform: scale(0.97); }
+
+        .btn-primary {
+            background: var(--grad);
+            color: #000;
+            box-shadow: 0 10px 30px var(--accent-glow);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--text);
+            border: 1.5px solid var(--border-2);
+        }
+
+        .hero-stats-row {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+        }
+
+        .hero-stat {
+            flex: 1;
+            min-width: 80px;
+        }
+
+        .hero-stat strong {
+            display: block;
+            font-family: 'Outfit', sans-serif;
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--accent);
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .hero-stat span {
+            font-size: 11px;
+            color: var(--text-dim);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Phone Mockup */
+        .hero-phone {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .phone {
+            width: 270px;
+            height: 550px;
+            background: #000;
+            border-radius: 40px;
+            border: 10px solid #1a1a1a;
+            box-shadow: 
+                0 40px 80px rgba(0,0,0,0.9),
+                0 0 0 1px rgba(0, 255, 136, 0.15),
+                0 0 80px rgba(0, 255, 136, 0.1);
+            position: relative;
+            overflow: hidden;
+            animation: phoneFloat 6s ease-in-out infinite;
+        }
+
+        @keyframes phoneFloat {
+            0%, 100% { transform: translateY(0) rotate(-1.5deg); }
+            50% { transform: translateY(-16px) rotate(1.5deg); }
+        }
+
+        .phone-notch {
+            position: absolute;
+            top: 0; left: 50%;
+            transform: translateX(-50%);
+            width: 90px; height: 22px;
+            background: #1a1a1a;
+            border-radius: 0 0 12px 12px;
+            z-index: 10;
+        }
+
+        .phone-screen {
+            padding: 32px 12px 12px;
+            height: 100%;
+            background: linear-gradient(180deg, #0a0a0a 0%, #000 100%);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .chat-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 0 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .chat-avatar {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            background: var(--grad);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 12px;
+            color: #000;
+        }
+
+        .chat-info { flex: 1; }
+        .chat-name { font-size: 12px; font-weight: 700; }
+        .chat-status { font-size: 9px; color: var(--accent); }
+        .chat-icons { display: flex; gap: 8px; font-size: 13px; }
+
+        .chat-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding-top: 8px;
+        }
+
+        .bubble {
+            padding: 9px 12px;
+            border-radius: 15px;
+            font-size: 11px;
+            max-width: 82%;
+            line-height: 1.4;
+        }
+        .bubble.in { 
+            background: #1a1a1a; 
+            align-self: flex-start; 
+            border-bottom-left-radius: 4px;
+            border: 1px solid var(--border);
+        }
+        .bubble.out { 
+            background: var(--grad); 
+            align-self: flex-end; 
+            border-bottom-right-radius: 4px; 
+            color: #000;
+            font-weight: 600;
+        }
+
+        .chat-input {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #1a1a1a;
+            border: 1px solid var(--border);
+            padding: 7px 10px;
+            border-radius: 20px;
+            margin-top: auto;
+        }
+        .chat-input span { font-size: 10px; color: var(--text-dim); flex: 1; }
+        .chat-input .send {
+            width: 26px; height: 26px;
+            background: var(--grad);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            color: #000;
+        }
+
+        /* ============ SECTION ============ */
+        .section {
+            padding: 60px 18px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .sec-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .sec-tag {
+            display: inline-block;
+            font-family: 'Outfit', sans-serif;
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--accent);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .sec-header h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 32px;
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -1.2px;
+            margin-bottom: 12px;
+        }
+
+        .sec-header h2 .accent {
+            background: var(--grad);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .sec-header p {
+            font-size: 14px;
+            color: var(--text-dim);
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        /* ============ VIDEO ============ */
+        .video-block {
+            background: var(--black-2);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 22px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .video-block::before {
+            content: '';
+            position: absolute;
+            top: -50%; right: -30%;
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(0, 255, 136, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .video-block > * { position: relative; z-index: 2; }
+
+        .video-head {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .live-dot {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 12px;
+            background: rgba(255, 59, 48, 0.12);
+            border: 1px solid rgba(255, 59, 48, 0.3);
+            border-radius: 30px;
+            font-size: 10px;
+            font-weight: 800;
+            color: #ff5c50;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+        }
+
+        .live-dot::before {
+            content: '';
+            width: 6px; height: 6px;
+            background: #ff3b30;
+            border-radius: 50%;
+            animation: recPulse 1.5s infinite;
+        }
+
+        @keyframes recPulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.4); opacity: 0.4; }
+        }
+
+        .video-block h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -0.8px;
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .video-block h3 .accent {
+            background: var(--grad);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .video-block > p {
+            font-size: 13.5px;
+            color: var(--text-dim);
+            margin-bottom: 18px;
+        }
+
+        .video-frame {
+            position: relative;
+            background: #000;
+            border-radius: 18px;
+            overflow: hidden;
+            aspect-ratio: 16 / 9;
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.7);
+        }
+
+        .video-frame iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+            display: block;
+        }
+
+        .video-frame video {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: cover;
+        }
+
+        /* Install steps */
+        .install-flow {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            background: var(--black-3);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+        }
+
+        .flow-num {
+            width: 34px; height: 34px;
+            background: var(--grad);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 14px;
+            color: #000;
+            flex-shrink: 0;
+        }
+
+        .flow-text strong {
+            display: block;
+            font-size: 13.5px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+        .flow-text span {
+            font-size: 11.5px;
+            color: var(--text-dim);
+        }
+
+        .video-cta-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            padding: 16px 24px;
+            background: var(--grad);
+            color: #000;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 14.5px;
+            font-weight: 800;
+            min-height: 56px;
+            margin-top: 18px;
+            box-shadow: 0 12px 30px var(--accent-glow);
+        }
+        .video-cta-btn:active { transform: scale(0.97); }
+
+        /* ============ FEATURES ============ */
+        .feat-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .feat-card {
+            background: var(--black-2);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 20px 18px;
+            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feat-card:active {
+            transform: scale(0.98);
+            border-color: rgba(0, 255, 136, 0.35);
+        }
+
+        .feat-card.span-2 { grid-column: span 2; min-height: 130px; }
+
+        .feat-card.accent {
+            background: var(--grad);
+            border: none;
+        }
+        .feat-card.accent h3, .feat-card.accent p { color: #000; }
+        .feat-card.accent .f-icon { background: rgba(0,0,0,0.15); }
+
+        .f-icon {
+            width: 44px; height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            background: rgba(0, 255, 136, 0.08);
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            margin-bottom: 14px;
+        }
+
+        .feat-card h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            letter-spacing: -0.2px;
+        }
+        .feat-card p {
+            font-size: 12px;
+            color: var(--text-dim);
+            line-height: 1.55;
+        }
+
+        .feat-card.accent p { color: rgba(0,0,0,0.7); }
+
+        /* ============ SCREENSHOTS ============ */
+        .shots-scroll {
+            display: flex;
+            gap: 14px;
+            overflow-x: auto;
+            padding: 4px 18px 20px;
+            margin: 0 -18px;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        .shots-scroll::-webkit-scrollbar { display: none; }
+
+        .shot {
+            flex: 0 0 220px;
+            scroll-snap-align: center;
+            background: var(--black-2);
+            border-radius: 20px;
+            padding: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .shot img {
+            width: 100%;
+            border-radius: 14px;
+            display: block;
+        }
+
+        /* ============ DEVELOPER ============ */
+        .dev-card {
+            background: var(--black-2);
+            border: 1px solid var(--border);
+            border-radius: 26px;
+            padding: 32px 24px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dev-card::before {
+            content: '';
+            position: absolute;
+            top: -40%; left: -20%;
+            width: 350px; height: 350px;
+            background: radial-gradient(circle, rgba(0, 255, 136, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .dev-card > * { position: relative; z-index: 2; }
+
+        .dev-photo {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 18px;
+        }
+
+        .dev-photo img {
+            width: 120px; height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--black-3);
+            position: relative;
+            z-index: 2;
+        }
+
+        .dev-photo::before {
+            content: '';
+            position: absolute;
+            inset: -6px;
+            border-radius: 50%;
+            background: var(--grad);
+            z-index: 1;
+            animation: spin 10s linear infinite;
+            opacity: 0.6;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .dev-card h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .dev-role {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--accent);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding: 5px 14px;
+            background: rgba(0, 255, 136, 0.08);
+            border: 1px solid rgba(0, 255, 136, 0.25);
+            border-radius: 30px;
+            margin-bottom: 16px;
+        }
+
+        .dev-card p {
+            font-size: 13.5px;
+            color: var(--text-dim);
+            line-height: 1.7;
+            max-width: 400px;
+            margin: 0 auto 22px;
+        }
+
+        .dev-links {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .dev-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 20px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 700;
+            min-height: 50px;
+            transition: transform 0.15s ease;
+        }
+        .dev-link:active { transform: scale(0.97); }
+
+        .dev-link.wa {
+            background: var(--wa);
+            color: #fff;
+            box-shadow: 0 8px 22px rgba(37, 211, 102, 0.35);
+        }
+
+        .dev-link.email {
+            background: var(--black-3);
+            color: var(--text);
+            border: 1px solid var(--border-2);
+        }
+
+        /* ============ DOWNLOAD ============ */
+        .dl-block {
+            background: var(--black-2);
+            border: 1px solid var(--border);
+            border-radius: 26px;
+            padding: 40px 24px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dl-block::before {
+            content: '';
+            position: absolute;
+            top: -50%; right: -30%;
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(0, 255, 136, 0.12) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .dl-block > * { position: relative; z-index: 2; }
+
+        .dl-block h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 32px;
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -1px;
+            margin-bottom: 12px;
+        }
+
+        .dl-block h2 .accent {
+            background: var(--grad);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .dl-block p {
+            font-size: 14px;
+            color: var(--text-dim);
+            margin-bottom: 26px;
+            max-width: 380px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .dl-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            padding: 18px 24px;
+            background: var(--grad);
+            color: #000;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 800;
+            min-height: 58px;
+            box-shadow: 0 12px 30px var(--accent-glow);
+        }
+        .dl-btn:active { transform: scale(0.97); }
+
+        .dl-chips {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .dl-chip {
+            padding: 6px 14px;
+            background: rgba(0, 255, 136, 0.06);
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 0.5px;
+        }
+
+        /* ============ FOOTER ============ */
+        footer {
+            padding: 50px 18px 30px;
+            border-top: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .foot-logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 17px;
+            margin-bottom: 14px;
+        }
+
+        .foot-logo img {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            background: #fff;
+            padding: 2px;
+            border: 1.5px solid var(--accent);
+        }
+
+        .foot-links {
+            display: flex;
+            justify-content: center;
+            gap: 18px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+            list-style: none;
+        }
+
+        .foot-links a {
+            font-size: 12.5px;
+            color: var(--text-dim);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .foot-links a:active { color: var(--accent); }
+
+        .foot-copy {
+            font-size: 11.5px;
+            color: var(--text-dim-2);
+        }
+
+        /* ============ BOTTOM NAV ============ */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            z-index: 998;
+            background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-top: 1px solid var(--border);
+            padding: 8px 6px calc(8px + var(--safe-b));
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .bn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            padding: 8px 6px;
+            text-decoration: none;
+            color: var(--text-dim);
+            font-size: 9.5px;
+            font-weight: 700;
+            border-radius: 12px;
+            flex: 1;
+            min-width: 0;
+            transition: color 0.2s;
+        }
+        .bn:active { color: var(--accent); }
+
+        .bn .bn-icon { font-size: 19px; line-height: 1; }
+
+        .bn.highlight {
+            background: var(--grad);
+            color: #000;
+            flex: 1.4;
+            border-radius: 14px;
+            margin: 0 3px;
+            box-shadow: 0 6px 18px var(--accent-glow);
+        }
+        .bn.highlight:active { color: #000; }
+
+        /* ============ WHATSAPP FAB ============ */
+        .wa-fab {
+            position: fixed;
+            bottom: calc(90px + var(--safe-b));
+            right: 16px;
+            width: 54px; height: 54px;
+            background: linear-gradient(135deg, var(--wa) 0%, var(--wa-dark) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            box-shadow: 0 10px 30px rgba(37, 211, 102, 0.5);
+            text-decoration: none;
+            animation: waPulse 3s infinite;
+        }
+        .wa-fab:active { transform: scale(0.9); }
+        .wa-fab svg { width: 28px; height: 28px; fill: #fff; }
+
+        @keyframes waPulse {
+            0%, 100% { box-shadow: 0 10px 30px rgba(37, 211, 102, 0.5), 0 0 0 0 rgba(37, 211, 102, 0.4); }
+            50% { box-shadow: 0 10px 30px rgba(37, 211, 102, 0.5), 0 0 0 14px rgba(37, 211, 102, 0); }
+        }
+
+        /* ============ ANIMATIONS ============ */
+        .fade-up {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        .fade-up.in { opacity: 1; transform: translateY(0); }
+
+        /* ============ TABLET / DESKTOP ============ */
+        @media (min-width: 700px) {
+            body { padding-bottom: 0; }
+
+            .toolbar { padding: 16px 40px; padding-top: calc(16px + var(--safe-t)); }
+            .company-logo img { width: 48px; height: 48px; border-radius: 14px; }
+            .company-name { font-size: 22px; }
+            .toolbar-btn { padding: 11px 22px; font-size: 13.5px; }
+            .toolbar-btn.ghost { display: inline-flex; }
+
+            .hero {
+                padding: 130px 40px 80px;
+                padding-top: calc(130px + var(--safe-t));
+            }
+
+            .hero-grid {
+                grid-template-columns: 1.1fr 1fr;
+                gap: 60px;
+            }
+
+            .hero h1 { font-size: 76px; letter-spacing: -3px; }
+            .hero p { font-size: 17px; }
+            .hero-btns { flex-direction: row; }
+            .hero-phone { margin-top: 0; }
+            .phone { width: 320px; height: 640px; }
+
+            .section { padding: 90px 40px; }
+            .sec-header h2 { font-size: 48px; letter-spacing: -2px; }
+
+            .video-block { padding: 40px; }
+            .video-block h3 { font-size: 36px; letter-spacing: -1.5px; }
+
+            .install-flow {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 14px;
+            }
+            .video-cta-btn { max-width: 380px; margin-left: auto; margin-right: auto; }
+
+            .feat-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; }
+            .feat-card { min-height: 190px; padding: 28px 24px; }
+            .feat-card.span-2 { grid-column: span 3; flex-direction: row; align-items: center; gap: 20px; }
+            .feat-card.span-2 .f-icon { margin-bottom: 0; flex-shrink: 0; }
+
+            .shots-scroll {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 20px;
+                overflow: visible;
+                padding: 0;
+                margin: 0;
+            }
+            .shot { flex: none; }
+
+            .dev-card { padding: 50px 40px; max-width: 700px; margin: 0 auto; }
+            .dev-photo img { width: 150px; height: 150px; }
+            .dev-links { flex-direction: row; justify-content: center; }
+            .dev-link { padding: 14px 28px; }
+
+            .dl-block { padding: 70px 50px; max-width: 760px; margin: 0 auto; }
+            .dl-block h2 { font-size: 48px; }
+            .dl-btn { max-width: 380px; margin-left: auto; margin-right: auto; }
+
+            .wa-fab { bottom: 28px; right: 28px; width: 62px; height: 62px; }
+            .wa-fab svg { width: 32px; height: 32px; }
+
+            .bottom-nav {
+                top: 0; bottom: auto;
+                padding: 16px 40px;
+                padding-top: calc(16px + var(--safe-t));
+                justify-content: flex-end;
+                gap: 8px;
+                background: transparent;
+                border-top: none;
+                border-bottom: none;
+                pointer-events: none;
+                backdrop-filter: none;
+                -webkit-backdrop-filter: none;
+            }
+
+            .bn {
+                pointer-events: auto;
+                flex-direction: row;
+                font-size: 13px;
+                padding: 10px 18px;
+                flex: none;
+                gap: 8px;
+                background: rgba(0,0,0,0.6);
+                border: 1px solid var(--border);
+            }
+            .bn .bn-icon { font-size: 15px; }
+            .bn.highlight { flex: none; padding: 10px 22px; margin: 0; border-radius: 30px; border: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ============ TOP TOOLBAR ============ -->
+<header class="toolbar">
+    <div class="toolbar-inner">
+        <a href="#" class="company-logo">
+            <img src="image/logo.png" alt="SefeChat Logo">
+            <span class="company-name">SefeChat</span>
+        </a>
+        <div class="toolbar-actions">
+            <a href="https://wa.me/918101196453" target="_blank" class="toolbar-btn ghost">💬</a>
+            <a href="#download" class="toolbar-btn">⬇ Download</a>
+        </div>
+    </div>
+</header>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+    <div class="hero-grid">
+        <div>
+            <div class="hero-tag">
+                <span class="dot"></span>
+                Android App · Free Forever
+            </div>
+            <h1>Chat. Call.<br><span class="accent">Share.</span> All in one.</h1>
+            <p>A modern messaging app that connects you directly — no middleman, no ads, no compromises. Just fast, private, and beautiful conversations.</p>
+
+            <div class="hero-btns">
+                <a href="#download" class="btn btn-primary">⬇ Download APK</a>
+                <a href="#demo" class="btn btn-ghost">▶ Watch Demo</a>
+            </div>
+
+            <div class="hero-stats-row">
+                <div class="hero-stat"><strong>100%</strong><span>Free</span></div>
+                <div class="hero-stat"><strong>&lt;1s</strong><span>Delivery</span></div>
+                <div class="hero-stat"><strong>HD</strong><span>Calls</span></div>
+                <div class="hero-stat"><strong>0</strong><span>Ads</span></div>
+            </div>
+        </div>
+
+        <div class="hero-phone">
+            <div class="phone">
+                <div class="phone-notch"></div>
+                <div class="phone-screen">
+                    <div class="chat-header">
+                        <div class="chat-avatar">A</div>
+                        <div class="chat-info">
+                            <div class="chat-name">Alex</div>
+                            <div class="chat-status">● Online</div>
+                        </div>
+                        <div class="chat-icons">
+                            <span>📞</span>
+                            <span>📹</span>
+                        </div>
+                    </div>
+                    <div class="chat-body">
+                        <div class="bubble in">Hey there! 👋</div>
+                        <div class="bubble out">Hi! Just installed SefeChat</div>
+                        <div class="bubble in">Send me a pic?</div>
+                        <div class="bubble out">Check this out! 📸</div>
+                    </div>
+                    <div class="chat-input">
+                        <span>Message...</span>
+                        <div class="send">➤</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============ VIDEO SECTION ============ -->
+<section class="section" id="demo">
+    <div class="video-block fade-up">
+        <div class="video-head">
+            <span class="live-dot">Watch Demo</span>
+        </div>
+
+        <h3>See how to <span class="accent">install & use</span> in 1 minute</h3>
+        <p>Watch the quick demo below to see how easy SefeChat is to install and start using.</p>
+
+        <div class="video-frame">
+            <!-- 🎬 GOOGLE DRIVE VIDEO -->
+            <iframe 
+                src="https://drive.google.com/file/d/1ERkC74vhFgFRd9scTBTX6cJDVNuEDDok/preview" 
+                allow="autoplay; encrypted-media" 
+                allowfullscreen
+                title="SefeChat Demo Video">
+            </iframe>
+        </div>
+
+        <div class="install-flow">
+            <div class="flow-step">
+                <div class="flow-num">1</div>
+                <div class="flow-text">
+                    <strong>Download APK</strong>
+                    <span>Tap the download button below</span>
+                </div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-num">2</div>
+                <div class="flow-text">
+                    <strong>Allow Install</strong>
+                    <span>Enable unknown sources</span>
+                </div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-num">3</div>
+                <div class="flow-text">
+                    <strong>Start Chatting</strong>
+                    <span>Open app & enjoy!</span>
+                </div>
+            </div>
+        </div>
+
+        <a href="YOUR_APK_LINK_HERE" class="video-cta-btn" download>
+            ⬇ Download SefeChat APK
+        </a>
+    </div>
+</section>
+
+<!-- ============ FEATURES ============ -->
+<section class="section" id="features">
+    <div class="sec-header fade-up">
+        <div class="sec-tag">Features</div>
+        <h2>Everything you <span class="accent">need.</span></h2>
+        <p>Simple. Powerful. Private.</p>
+    </div>
+
+    <div class="feat-grid">
+        <div class="feat-card accent fade-up">
+            <div class="f-icon">💬</div>
+            <h3>Text Chat</h3>
+            <p>Instant messages with delivery & read receipts.</p>
+        </div>
+        <div class="feat-card fade-up">
+            <div class="f-icon">📹</div>
+            <h3>Video Calls</h3>
+            <p>HD face-to-face calling with front & rear camera.</p>
+        </div>
+        <div class="feat-card fade-up">
+            <div class="f-icon">📞</div>
+            <h3>Voice Calls</h3>
+            <p>Crystal clear HD audio quality.</p>
+        </div>
+        <div class="feat-card fade-up">
+            <div class="f-icon">🖼️</div>
+            <h3>Image Share</h3>
+            <p>Send photos instantly with preview.</p>
+        </div>
+        <div class="feat-card fade-up">
+            <div class="f-icon">🔒</div>
+            <h3>Private</h3>
+            <p>Direct device-to-device. No server needed.</p>
+        </div>
+        <div class="feat-card span-2 fade-up">
+            <div class="f-icon">⚡</div>
+            <div>
+                <h3>Lightning Fast</h3>
+                <p>Direct peer-to-peer connection means messages arrive instantly — no delays, no waiting.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============ SCREENSHOTS ============ -->
+<section class="section" id="screenshots">
+    <div class="sec-header fade-up">
+        <div class="sec-tag">Gallery</div>
+        <h2>See it <span class="accent">in action.</span></h2>
+        <p>Swipe to explore the app →</p>
+    </div>
+
+    <div class="shots-scroll">
+        <div class="shot"><img src="image/file_000000006e7482119733be159e09e771.png" alt="Screen 1"></div>
+        <div class="shot"><img src="image/file_000000007e4c81f481d4409ae8449fd9.png" alt="Screen 2"></div>
+        <div class="shot"><img src="image/file_000000008a908208b471455e9df579f8.png" alt="Screen 3"></div>
+    </div>
+</section>
+
+<!-- ============ DEVELOPER ============ -->
+<section class="section" id="developer">
+    <div class="sec-header fade-up">
+        <div class="sec-tag">Creator</div>
+        <h2>Made by <span class="accent">Afsar.</span></h2>
+    </div>
+
+    <div class="dev-card fade-up">
+        <div class="dev-photo">
+            <img src="image/file_000000006e7482119733be159e09e771.png" alt="Afsar">
+        </div>
+        <h3>Afsar</h3>
+        <div class="dev-role">Android Developer</div>
+        <p>From Bankura, West Bengal. I built SefeChat to make private, simple communication possible for everyone — using modern Android tools with focus on clean design.</p>
+
+        <div class="dev-links">
+            <a href="https://wa.me/918101196453?text=Hi%20Afsar!" target="_blank" class="dev-link wa">
+                💬 Message on WhatsApp
+            </a>
+            <a href="mailto:afsarofficial007@gmail.com" class="dev-link email">
+                ✉ afsarofficial007@gmail.com
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ============ DOWNLOAD ============ -->
+<section class="section" id="download">
+    <div class="dl-block fade-up">
+        <h2>Get <span class="accent">SefeChat</span><br>on Android</h2>
+        <p>Free download. No signup. No ads. Just install and start chatting.</p>
+
+        <a href="YOUR_APK_LINK_HERE" class="dl-btn" download>
+            ⬇ Download APK Now
+        </a>
+
+        <div class="dl-chips">
+            <div class="dl-chip">✓ Free</div>
+            <div class="dl-chip">✓ No Ads</div>
+            <div class="dl-chip">✓ Private</div>
+            <div class="dl-chip">✓ v1.0</div>
+        </div>
+    </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+    <div class="foot-logo">
+        <img src="image/logo.png" alt="SefeChat">
+        SefeChat
+    </div>
+    <ul class="foot-links">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#demo">Demo</a></li>
+        <li><a href="#download">Download</a></li>
+        <li><a href="mailto:afsarofficial007@gmail.com">Email</a></li>
+    </ul>
+    <div class="foot-copy">© 2025 SefeChat · Built by Afsar in Bankura, West Bengal</div>
+</footer>
+
+<!-- ============ WHATSAPP FAB ============ -->
+<a href="https://wa.me/918101196453?text=Hi!%20I%20want%20to%20know%20more%20about%20SefeChat." 
+   target="_blank" class="wa-fab" aria-label="WhatsApp">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+    </svg>
+</a>
+
+<!-- ============ BOTTOM NAV ============ -->
+<nav class="bottom-nav">
+    <a href="#features" class="bn"><span class="bn-icon">✨</span><span>Features</span></a>
+    <a href="#demo" class="bn"><span class="bn-icon">▶</span><span>Demo</span></a>
+    <a href="#download" class="bn highlight"><span class="bn-icon">⬇</span><span>Download</span></a>
+    <a href="#developer" class="bn"><span class="bn-icon">👤</span><span>Dev</span></a>
+    <a href="https://wa.me/918101196453" target="_blank" class="bn"><span class="bn-icon">💬</span><span>Chat</span></a>
+</nav>
+
+<script>
+    // Smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+        a.addEventListener('click', function(e) {
+            const href = this.getAttribute('href');
+            if (href === '#') return;
+            e.preventDefault();
+            const t = document.querySelector(href);
+            if (t) window.scrollTo({ top: t.offsetTop - 70, behavior: 'smooth' });
+        });
+    });
+
+    // Fade-up animation
+    const io = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.fade-up').forEach(el => io.observe(el));
+</script>
+
+</body>
+</html>
